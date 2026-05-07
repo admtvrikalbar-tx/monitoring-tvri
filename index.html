@@ -3,75 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Monitoring TVRI Multi-view</title>
+    <title>TVRI MCR MONITORING</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { background-color: #0f172a; color: #ffffff; font-family: sans-serif; margin: 0; padding: 15px; }
-        h2 { text-align: center; color: #38bdf8; text-transform: uppercase; }
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            max-width: 1400px;
-            margin: auto;
-        }
+        :root { --accent: #38bdf8; --bg: #020617; }
+        body { background-color: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; }
+        
+        /* Header & Clock */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; }
+        #clock { font-family: monospace; font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+        
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1400px; margin: auto; }
         @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
+
         .video-box { 
-            background: #000; border: 1px solid #334155; position: relative; 
-            border-radius: 10px; overflow: hidden;
+            background: #000; border: 1px solid #1e293b; position: relative; 
+            border-radius: 4px; overflow: hidden; transition: all 0.3s;
         }
-        video { width: 100%; display: block; aspect-ratio: 16/9; cursor: pointer; }
+        .video-box:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+        video { width: 100%; display: block; aspect-ratio: 16/9; }
+
+        /* Label Style */
         .label { 
-            position: absolute; top: 12px; left: 12px; background: rgba(15, 23, 42, 0.85); 
-            padding: 5px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; 
-            z-index: 10; border-left: 4px solid #38bdf8;
+            position: absolute; top: 0; left: 0; background: rgba(2, 6, 23, 0.9); 
+            padding: 5px 15px; font-size: 12px; font-weight: bold; z-index: 10;
+            border-bottom-right-radius: 8px; display: flex; align-items: center; gap: 8px;
         }
-        .btn-refresh {
-            display: block; margin: 10px auto; padding: 8px 16px; 
-            background: #38bdf8; border: none; border-radius: 5px; 
-            color: #0f172a; font-weight: bold; cursor: pointer;
-        }
+        .live-dot { height: 8px; width: 8px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <h2>📡 DASHBOARD MONITORING TVRI</h2>
-    <button class="btn-refresh" onclick="location.reload()">🔄 REFRESH SEMUA SIARAN</button>
+    <div class="header">
+        <div><strong>TVRI TRANSMISSION MONITORING</strong> | KALIMANTAN BARAT</div>
+        <div id="clock">00:00:00</div>
+    </div>
 
     <div class="grid-container">
-        <div class="video-box"><div class="label">NASIONAL</div><video id="video1" controls muted autoplay playsinline></video></div>
-        <div class="video-box"><div class="label">SPORT</div><video id="video2" controls muted autoplay playsinline></video></div>
-        <div class="video-box"><div class="label">WORLD</div><video id="video3" controls muted autoplay playsinline></video></div>
-        <div class="video-box"><div class="label">KALBAR</div><video id="video4" controls muted autoplay playsinline></video></div>
+        <div class="video-box"><div class="label"><span class="live-dot"></span> NASIONAL</div><video id="v1" controls muted autoplay playsinline></video></div>
+        <div class="video-box"><div class="label"><span class="live-dot"></span> SPORT</div><video id="v2" controls muted autoplay playsinline></video></div>
+        <div class="video-box"><div class="label"><span class="live-dot"></span> WORLD</div><video id="v3" controls muted autoplay playsinline></video></div>
+        <div class="video-box"><div class="label"><span class="live-dot"></span> KALBAR</div><video id="v4" controls muted autoplay playsinline></video></div>
     </div>
 
     <script>
+        // Update Clock
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID');
+        }
+        setInterval(updateClock, 1000);
+
         const streams = [
-            { id: 'video1', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nasional_backup.m3u8' },
-            { id: 'video2', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_sport_backup.m3u8' },
-            { id: 'video3', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_world_backup.m3u8' },
-            { id: 'video4', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_kalimantan_barat.m3u8' }
+            { id: 'v1', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nasional_backup.m3u8' },
+            { id: 'v2', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_sport_backup.m3u8' },
+            { id: 'v3', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_world_backup.m3u8' },
+            { id: 'v4', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_kalimantan_barat.m3u8' }
         ];
 
-        function setupVideo(stream) {
-            const video = document.getElementById(stream.id);
+        streams.forEach(s => {
+            const v = document.getElementById(s.id);
             if (Hls.isSupported()) {
-                const hls = new Hls({ manifestLoadingMaxRetry: 10, manifestLoadingRetryDelay: 1000 });
-                hls.loadSource(stream.url);
-                hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, () => {
-                    video.play().catch(() => console.log("Autoplay dicegah browser, klik untuk putar."));
-                });
-                // Auto-recover jika error
-                hls.on(Hls.Events.ERROR, (event, data) => {
-                    if (data.fatal) hls.startLoad();
-                });
-            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                video.src = stream.url;
+                const hls = new Hls();
+                hls.loadSource(s.url);
+                hls.attachMedia(v);
             }
-        }
-
-        streams.forEach(setupVideo);
+        });
     </script>
 </body>
 </html>
