@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TVRI MONITORING | KALBAR</title>
+    <title>TVRI MONITORING | CENTERED DASHBOARD</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root { 
             --accent: #38bdf8;
-            --overlay-bg: rgba(15, 23, 42, 0.7);
+            --overlay-bg: rgba(15, 23, 42, 0.85);
+            --amber: #fbce7c;
         }
 
         * { box-sizing: border-box; }
 
         body, html { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
+            margin: 0; padding: 0; 
+            width: 100%; height: 100%; 
             background-color: #000; 
             overflow: hidden; 
-            font-family: 'Inter', sans-serif;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
         }
 
         /* Grid Full Layar */
@@ -36,86 +35,85 @@
             position: relative; 
             border: 0.5px solid #1e293b; 
             background: #000;
-            overflow: hidden;
         }
         
-        video { 
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; /* Memastikan video memenuhi kotak */
-        }
+        video { width: 100%; height: 100%; object-fit: cover; }
 
-        /* Label Nama Channel */
+        /* Label Channel */
         .ch-label { 
-            position: absolute; 
-            top: 10px; 
-            left: 10px; 
+            position: absolute; top: 15px; left: 15px; 
             background: var(--overlay-bg);
-            backdrop-filter: blur(4px);
+            backdrop-filter: blur(8px);
             color: var(--accent); 
-            padding: 4px 12px; 
-            font-size: 10px; 
-            font-weight: 800; 
-            border-radius: 4px;
-            z-index: 10;
+            padding: 5px 12px; 
+            font-size: 11px; font-weight: 800; 
+            border-radius: 4px; z-index: 10;
             border: 1px solid rgba(56, 189, 248, 0.3);
-            display: flex; align-items: center; gap: 5px;
+            display: flex; align-items: center; gap: 6px;
         }
 
-        /* Overlay Informasi Melayang (Floating) */
-        .floating-info {
+        /* Overlay Informasi Tengah Bawah */
+        .floating-center-info {
             position: absolute;
-            bottom: 0;
-            width: 100%;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            padding: 15px 20px;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
             z-index: 100;
-            pointer-events: none; /* Agar tidak mengganggu klik video */
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
+            text-align: center;
+            background: var(--overlay-bg);
+            backdrop-filter: blur(12px);
+            padding: 15px 40px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            min-width: 500px;
         }
 
-        .info-left { color: white; }
-        .info-left .pagu { font-size: 14px; font-weight: bold; color: var(--accent); }
-        .info-left .shift-info { font-size: 11px; color: #fbce7c; margin-top: 2px; }
+        #clock { 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 28px; font-weight: 800; 
+            color: #fff; line-height: 1; margin-bottom: 5px;
+        }
 
-        .info-right { text-align: right; color: white; }
-        #date { font-size: 11px; opacity: 0.8; margin-bottom: 2px; }
-        #clock { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: bold; }
+        #date { 
+            font-size: 12px; font-weight: 600; 
+            color: var(--accent); letter-spacing: 2px;
+            margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 8px;
+        }
 
-        .live-dot { height: 6px; width: 6px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1.2s infinite; }
+        .shift-details {
+            font-size: 11px; font-weight: 500; color: var(--amber);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        .live-dot { height: 7px; width: 7px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1.2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
     </style>
 </head>
 <body>
 
-    <div class="floating-info">
-        <div class="info-left">
-            <div class="pagu">TVRI KALIMANTAN BARAT | TRANSMISI PONTIANAK</div>
-            <div id="shift-display" class="shift-info">MENGAMBIL DATA SHIFT...</div>
-        </div>
-        <div class="info-right">
-            <div id="date">KAMIS, 7 MEI 2026</div>
-            <div id="clock">00:00:00 WIB</div>
-        </div>
+    <div class="floating-center-info">
+        <div id="date">MEMUAT TANGGAL...</div>
+        <div id="clock">00:00:00 WIB</div>
+        <div id="shift-display" class="shift-details">MENGAMBIL DATA PETUGAS STANDBY...</div>
     </div>
 
     <div class="grid-container">
         <div class="video-box">
-            <div class="ch-label"><span class="live-dot"></span> CH_01: NASIONAL</div>
+            <div class="ch-label"><span class="live-dot"></span> NASIONAL</div>
             <video id="v1" controls muted autoplay playsinline></video>
         </div>
         <div class="video-box">
-            <div class="ch-label"><span class="live-dot"></span> CH_02: SPORT</div>
+            <div class="ch-label"><span class="live-dot"></span> SPORT</div>
             <video id="v2" controls muted autoplay playsinline></video>
         </div>
         <div class="video-box">
-            <div class="ch-label"><span class="live-dot"></span> CH_03: WORLD</div>
+            <div class="ch-label"><span class="live-dot"></span> WORLD</div>
             <video id="v3" controls muted autoplay playsinline></video>
         </div>
         <div class="video-box">
-            <div class="ch-label"><span class="live-dot"></span> CH_04: KALBAR</div>
+            <div class="ch-label"><span class="live-dot"></span> KALBAR</div>
             <video id="v4" controls muted autoplay playsinline></video>
         </div>
     </div>
@@ -152,14 +150,14 @@
         function updateUI() {
             const now = new Date();
             
-            // Update Jam
+            // Jam & Detik
             document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID') + " WIB";
             
-            // Update Tanggal
-            const opsiTgl = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            // Tanggal Tengah
+            const opsiTgl = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
             document.getElementById('date').innerText = now.toLocaleDateString('id-ID', opsiTgl).toUpperCase();
             
-            // Update Shift & Petugas
+            // Logic Shift
             const tgl = now.getDate();
             const jam = now.getHours();
             let shift = "";
@@ -169,8 +167,8 @@
             else if (jam >= 8 && jam < 16) { shift = "2"; jamShift = "08:00 - 16:00"; }
             else { shift = "3"; jamShift = "16:00 - 00:00"; }
 
-            let petugas = dataJadwal[tgl] ? dataJadwal[tgl][shift] : "DATA TIDAK ADA";
-            document.getElementById('shift-display').innerText = `SHIFT ${shift} (${jamShift}) | PETUGAS: ${petugas}`;
+            let petugas = dataJadwal[tgl] ? dataJadwal[tgl][shift] : "DATA TIDAK TERSEDIA";
+            document.getElementById('shift-display').innerText = `SHIFT ${shift} (${jamShift}) • OPERATOR: ${petugas}`;
         }
 
         setInterval(updateUI, 1000);
@@ -189,6 +187,7 @@
                 const hls = new Hls();
                 hls.loadSource(s.url);
                 hls.attachMedia(v);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() { v.play(); });
             }
         });
     </script>
