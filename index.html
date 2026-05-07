@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitoring TVRI Multi-view</title>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <style>
+        body { 
+            background-color: #121212; 
+            color: #ffffff; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            padding: 15px; 
+        }
+        h2 { 
+            text-align: center; 
+            font-size: 1.5rem; 
+            margin-bottom: 20px;
+            color: #00aaff;
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr); /* Membuat 2 kolom */
+            gap: 15px;
+            max-width: 1400px;
+            margin: auto;
+        }
+        @media (max-width: 768px) {
+            .grid-container { grid-template-columns: 1fr; } /* 1 kolom jika buka di HP */
+        }
+        .video-box { 
+            background: #000; 
+            border: 2px solid #333; 
+            position: relative; 
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        video { 
+            width: 100%; 
+            display: block; 
+            aspect-ratio: 16/9; 
+        }
+        .label { 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            background: rgba(0, 0, 0, 0.8); 
+            padding: 4px 12px; 
+            font-size: 13px; 
+            font-weight: bold;
+            border-radius: 4px;
+            z-index: 10;
+            border-left: 3px solid #00aaff;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>📡 MULTIVIEW MONITORING TVRI</h2>
+
+    <div class="grid-container">
+        <div class="video-box">
+            <div class="label">TVRI NTB (Link 1)</div>
+            <video id="video1" controls muted autoplay></video>
+        </div>
+        <div class="video-box">
+            <div class="label">MONITORING 2</div>
+            <video id="video2" controls muted autoplay></video>
+        </div>
+        <div class="video-box">
+            <div class="label">MONITORING 3</div>
+            <video id="video3" controls muted autoplay></video>
+        </div>
+        <div class="video-box">
+            <div class="label">MONITORING 4</div>
+            <video id="video4" controls muted autoplay></video>
+        </div>
+    </div>
+
+    <script>
+        // Masukkan link m3u8 hasil grab di sini
+        const streams = [
+            { id: 'video1', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' },
+            { id: 'video2', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' },
+            { id: 'video3', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' },
+            { id: 'video4', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' }
+        ];
+
+        streams.forEach(stream => {
+            const video = document.getElementById(stream.id);
+            if (Hls.isSupported()) {
+                const hls = new Hls();
+                hls.loadSource(stream.url);
