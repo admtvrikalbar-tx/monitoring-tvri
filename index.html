@@ -3,121 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TVRI TRANSMISSION MONITORING| KALIMANTAN BARAT</title>
+    <title>TVRI MONITORING | KALBAR</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         :root { 
-            --bg-dark: #0f172a;      /* Navy Blue gelap */
-            --bg-panel: #1e293b;     /* Slate Blue untuk panel */
-            --accent-blue: #38bdf8;  /* Sky Blue modern */
-            --text-main: #f1f5f9;    /* Putih kebiruan */
-            --ticker-gold: #fbce7c;  /* Soft Amber */
+            --accent: #38bdf8;
+            --overlay-bg: rgba(15, 23, 42, 0.7);
         }
 
-        body { 
-            background-color: var(--bg-dark); 
-            color: var(--text-main); 
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif; 
+        * { box-sizing: border-box; }
+
+        body, html { 
             margin: 0; 
-            padding: 15px; 
-            letter-spacing: 0.5px;
-        }
-        
-        /* Header & Clock Section */
-        .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 2px solid rgba(56, 189, 248, 0.3); 
-            padding-bottom: 12px; 
-            margin-bottom: 8px; 
-        }
-        
-        .header-title { display: flex; flex-direction: column; }
-        .header-title strong { color: var(--accent-blue); font-size: 1.2rem; }
-        .header-title span { font-size: 0.8rem; opacity: 0.7; }
-
-        #clock-container { text-align: right; }
-        #date { font-size: 0.85rem; opacity: 0.8; font-weight: 500; }
-        #clock { font-family: 'JetBrains Mono', monospace; font-size: 1.8rem; color: var(--text-main); font-weight: 700; }
-        
-        /* Ticker Style - Modern Glassmorphism */
-        .ticker-container {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            color: var(--ticker-gold);
-            padding: 10px 0;
-            margin-bottom: 20px;
-            font-weight: 600;
-            font-size: 0.95rem;
-            border-radius: 6px;
+            padding: 0; 
+            width: 100%; 
+            height: 100%; 
+            background-color: #000; 
+            overflow: hidden; 
+            font-family: 'Inter', sans-serif;
         }
 
-        /* Video Grid Layout */
+        /* Grid Full Layar */
         .grid-container { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
-            gap: 20px; 
-            max-width: 1400px; 
-            margin: auto; 
+            grid-template-rows: repeat(2, 1fr); 
+            width: 100vw; 
+            height: 100vh; 
         }
-        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
 
         .video-box { 
-            background: #000; 
-            border: 1px solid var(--bg-panel); 
             position: relative; 
-            border-radius: 8px; 
-            overflow: hidden; 
-            transition: transform 0.2s, border-color 0.2s;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            border: 0.5px solid #1e293b; 
+            background: #000;
+            overflow: hidden;
         }
-        .video-box:hover { 
-            border-color: var(--accent-blue); 
-            transform: scale(1.01);
+        
+        video { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; /* Memastikan video memenuhi kotak */
         }
-        video { width: 100%; display: block; aspect-ratio: 16/9; }
 
-        /* Label Style */
-        .label { 
-            position: absolute; top: 12px; left: 12px; 
-            background: rgba(15, 23, 42, 0.85); 
+        /* Label Nama Channel */
+        .ch-label { 
+            position: absolute; 
+            top: 10px; 
+            left: 10px; 
+            background: var(--overlay-bg);
             backdrop-filter: blur(4px);
-            color: var(--accent-blue); 
+            color: var(--accent); 
             padding: 4px 12px; 
-            font-size: 11px; 
+            font-size: 10px; 
             font-weight: 800; 
-            z-index: 10;
             border-radius: 4px;
+            z-index: 10;
             border: 1px solid rgba(56, 189, 248, 0.3);
-            display: flex; align-items: center; gap: 8px;
+            display: flex; align-items: center; gap: 5px;
         }
+
+        /* Overlay Informasi Melayang (Floating) */
+        .floating-info {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 15px 20px;
+            z-index: 100;
+            pointer-events: none; /* Agar tidak mengganggu klik video */
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .info-left { color: white; }
+        .info-left .pagu { font-size: 14px; font-weight: bold; color: var(--accent); }
+        .info-left .shift-info { font-size: 11px; color: #fbce7c; margin-top: 2px; }
+
+        .info-right { text-align: right; color: white; }
+        #date { font-size: 11px; opacity: 0.8; margin-bottom: 2px; }
+        #clock { font-family: 'JetBrains Mono', monospace; font-size: 20px; font-weight: bold; }
+
         .live-dot { height: 6px; width: 6px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1.2s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="header-title">
-            <strong>TVRI TRANSMISSION MONITORING</strong>
-            <span>LPP TVRI STASIUN KALIMANTAN BARAT</span>
+    <div class="floating-info">
+        <div class="info-left">
+            <div class="pagu">TVRI KALIMANTAN BARAT | TRANSMISI PONTIANAK</div>
+            <div id="shift-display" class="shift-info">MENGAMBIL DATA SHIFT...</div>
         </div>
-        <div id="clock-container">
-            <div id="date">MEMUAT DATA...</div>
+        <div class="info-right">
+            <div id="date">KAMIS, 7 MEI 2026</div>
             <div id="clock">00:00:00 WIB</div>
         </div>
     </div>
 
-    <div class="ticker-container">
-        <marquee id="shift-ticker" scrollamount="5">MENGHUBUNGKAN KE SERVER JADWAL...</marquee>
-    </div>
-
     <div class="grid-container">
-        <div class="video-box"><div class="label"><span class="live-dot"></span> NASIONAL</div><video id="v1" controls muted autoplay playsinline></video></div>
-        <div class="video-box"><div class="label"><span class="live-dot"></span> SPORT</div><video id="v2" controls muted autoplay playsinline></video></div>
-        <div class="video-box"><div class="label"><span class="live-dot"></span> WORLD</div><video id="v3" controls muted autoplay playsinline></video></div>
-        <div class="video-box"><div class="label"><span class="live-dot"></span> KALBAR</div><video id="v4" controls muted autoplay playsinline></video></div>
+        <div class="video-box">
+            <div class="ch-label"><span class="live-dot"></span> CH_01: NASIONAL</div>
+            <video id="v1" controls muted autoplay playsinline></video>
+        </div>
+        <div class="video-box">
+            <div class="ch-label"><span class="live-dot"></span> CH_02: SPORT</div>
+            <video id="v2" controls muted autoplay playsinline></video>
+        </div>
+        <div class="video-box">
+            <div class="ch-label"><span class="live-dot"></span> CH_03: WORLD</div>
+            <video id="v3" controls muted autoplay playsinline></video>
+        </div>
+        <div class="video-box">
+            <div class="ch-label"><span class="live-dot"></span> CH_04: KALBAR</div>
+            <video id="v4" controls muted autoplay playsinline></video>
+        </div>
     </div>
 
     <script>
@@ -149,40 +149,32 @@
             "31": {"1": "Sangaji, Ibnu Sulthan, Ahmad Wildan", "2": "Ramadhan Surya, Rizky", "3": "Edi Kurniadi, Merdi Tri"}
         };
 
-        function updateMonitoring() {
+        function updateUI() {
             const now = new Date();
             
-            // Format Tanggal: SENIN, 7 MEI 2026
-            const opsiTanggal = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('date').innerText = now.toLocaleDateString('id-ID', opsiTanggal).toUpperCase();
-            
-            // Jam
+            // Update Jam
             document.getElementById('clock').innerText = now.toLocaleTimeString('id-ID') + " WIB";
             
-            const tanggal = now.getDate();
+            // Update Tanggal
+            const opsiTgl = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('date').innerText = now.toLocaleDateString('id-ID', opsiTgl).toUpperCase();
+            
+            // Update Shift & Petugas
+            const tgl = now.getDate();
             const jam = now.getHours();
             let shift = "";
             let jamShift = "";
 
-            if (jam >= 0 && jam < 8) { shift = "1"; jamShift = "00:00 - 08:00 WIB"; }
-            else if (jam >= 8 && jam < 16) { shift = "2"; jamShift = "08:00 - 16:00 WIB"; }
-            else { shift = "3"; jamShift = "16:00 - 00:00 WIB"; }
+            if (jam >= 0 && jam < 8) { shift = "1"; jamShift = "00:00 - 08:00"; }
+            else if (jam >= 8 && jam < 16) { shift = "2"; jamShift = "08:00 - 16:00"; }
+            else { shift = "3"; jamShift = "16:00 - 00:00"; }
 
-            let petugas = "DATABASE_OFFLINE";
-            if (dataJadwal[tanggal]) {
-                petugas = dataJadwal[tanggal][shift];
-            }
-
-            const tickerText = `TRANSMISI TVRI KALBAR | PONTIANAK [SHIFT ${shift}] | JADWAL: ${jamShift} | PETUGAS: ${petugas}`;
-            const tickerEl = document.getElementById('shift-ticker');
-            
-            if (tickerEl.innerText !== tickerText) {
-                tickerEl.innerText = tickerText;
-            }
+            let petugas = dataJadwal[tgl] ? dataJadwal[tgl][shift] : "DATA TIDAK ADA";
+            document.getElementById('shift-display').innerText = `SHIFT ${shift} (${jamShift}) | PETUGAS: ${petugas}`;
         }
 
-        setInterval(updateMonitoring, 1000);
-        updateMonitoring();
+        setInterval(updateUI, 1000);
+        updateUI();
 
         const streams = [
             { id: 'v1', url: 'https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional-avc1_1500000=10003-mp4a_96000_eng=20000.m3u8' },
