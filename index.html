@@ -6,80 +6,43 @@
     <title>Monitoring TVRI Multi-view</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        body { 
-            background-color: #0f172a; 
-            color: #ffffff; 
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            margin: 0; 
-            padding: 15px; 
-        }
-        h2 { 
-            text-align: center; 
-            font-size: 1.4rem; 
-            margin-bottom: 20px;
-            color: #38bdf8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
+        body { background-color: #0f172a; color: #ffffff; font-family: sans-serif; margin: 0; padding: 15px; }
+        h2 { text-align: center; color: #38bdf8; text-transform: uppercase; }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 2 Kolom */
+            grid-template-columns: repeat(2, 1fr);
             gap: 15px;
             max-width: 1400px;
             margin: auto;
         }
-        @media (max-width: 900px) {
-            .grid-container { grid-template-columns: 1fr; } /* Jadi 1 kolom jika di HP/layar kecil */
-        }
+        @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
         .video-box { 
-            background: #000; 
-            border: 1px solid #334155; 
-            position: relative; 
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+            background: #000; border: 1px solid #334155; position: relative; 
+            border-radius: 10px; overflow: hidden;
         }
-        video { 
-            width: 100%; 
-            display: block; 
-            aspect-ratio: 16/9; 
-        }
+        video { width: 100%; display: block; aspect-ratio: 16/9; cursor: pointer; }
         .label { 
-            position: absolute; 
-            top: 12px; 
-            left: 12px; 
-            background: rgba(15, 23, 42, 0.85); 
-            padding: 5px 12px; 
-            font-size: 12px; 
-            font-weight: 600;
-            border-radius: 6px;
-            z-index: 10;
-            border-left: 4px solid #38bdf8;
-            backdrop-filter: blur(4px);
+            position: absolute; top: 12px; left: 12px; background: rgba(15, 23, 42, 0.85); 
+            padding: 5px 12px; font-size: 11px; font-weight: bold; border-radius: 6px; 
+            z-index: 10; border-left: 4px solid #38bdf8;
+        }
+        .btn-refresh {
+            display: block; margin: 10px auto; padding: 8px 16px; 
+            background: #38bdf8; border: none; border-radius: 5px; 
+            color: #0f172a; font-weight: bold; cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <h2>📡 DASHBOARD MONITORING TVRI MULTIVIEW</h2>
+    <h2>📡 DASHBOARD MONITORING TVRI</h2>
+    <button class="btn-refresh" onclick="location.reload()">🔄 REFRESH SEMUA SIARAN</button>
 
     <div class="grid-container">
-        <div class="video-box">
-            <div class="label">TVRI NASIONAL (BACKUP)</div>
-            <video id="video1" controls muted autoplay></video>
-        </div>
-        <div class="video-box">
-            <div class="label">TVRI SPORT (BACKUP)</div>
-            <video id="video2" controls muted autoplay></video>
-        </div>
-        <div class="video-box">
-            <div class="label">TVRI WORLD (BACKUP)</div>
-            <video id="video3" controls muted autoplay></video>
-        </div>
-        <div class="video-box">
-            <div class="label">TVRI KALIMANTAN BARAT</div>
-            <video id="video4" controls muted autoplay></video>
-        </div>
+        <div class="video-box"><div class="label">NASIONAL</div><video id="video1" controls muted autoplay playsinline></video></div>
+        <div class="video-box"><div class="label">SPORT</div><video id="video2" controls muted autoplay playsinline></video></div>
+        <div class="video-box"><div class="label">WORLD</div><video id="video3" controls muted autoplay playsinline></video></div>
+        <div class="video-box"><div class="label">KALBAR</div><video id="video4" controls muted autoplay playsinline></video></div>
     </div>
 
     <script>
@@ -90,20 +53,25 @@
             { id: 'video4', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_kalimantan_barat.m3u8' }
         ];
 
-        streams.forEach(stream => {
+        function setupVideo(stream) {
             const video = document.getElementById(stream.id);
             if (Hls.isSupported()) {
-                const hls = new Hls();
+                const hls = new Hls({ manifestLoadingMaxRetry: 10, manifestLoadingRetryDelay: 1000 });
                 hls.loadSource(stream.url);
                 hls.attachMedia(video);
-                hls.on(Hls.Events.MANIFEST_PARSED, function() {
-                    video.play();
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                    video.play().catch(() => console.log("Autoplay dicegah browser, klik untuk putar."));
+                });
+                // Auto-recover jika error
+                hls.on(Hls.Events.ERROR, (event, data) => {
+                    if (data.fatal) hls.startLoad();
                 });
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-                // Support untuk Safari
                 video.src = stream.url;
             }
-        });
+        }
+
+        streams.forEach(setupVideo);
     </script>
 </body>
 </html>
