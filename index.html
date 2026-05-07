@@ -7,34 +7,37 @@
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
         body { 
-            background-color: #121212; 
+            background-color: #0f172a; 
             color: #ffffff; 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
             margin: 0; 
             padding: 15px; 
         }
         h2 { 
             text-align: center; 
-            font-size: 1.5rem; 
+            font-size: 1.4rem; 
             margin-bottom: 20px;
-            color: #00aaff;
+            color: #38bdf8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Membuat 2 kolom */
+            grid-template-columns: repeat(2, 1fr); /* 2 Kolom */
             gap: 15px;
             max-width: 1400px;
             margin: auto;
         }
-        @media (max-width: 768px) {
-            .grid-container { grid-template-columns: 1fr; } /* 1 kolom jika buka di HP */
+        @media (max-width: 900px) {
+            .grid-container { grid-template-columns: 1fr; } /* Jadi 1 kolom jika di HP/layar kecil */
         }
         .video-box { 
             background: #000; 
-            border: 2px solid #333; 
+            border: 1px solid #334155; 
             position: relative; 
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
         }
         video { 
             width: 100%; 
@@ -43,48 +46,48 @@
         }
         .label { 
             position: absolute; 
-            top: 10px; 
-            left: 10px; 
-            background: rgba(0, 0, 0, 0.8); 
-            padding: 4px 12px; 
-            font-size: 13px; 
-            font-weight: bold;
-            border-radius: 4px;
+            top: 12px; 
+            left: 12px; 
+            background: rgba(15, 23, 42, 0.85); 
+            padding: 5px 12px; 
+            font-size: 12px; 
+            font-weight: 600;
+            border-radius: 6px;
             z-index: 10;
-            border-left: 3px solid #00aaff;
+            border-left: 4px solid #38bdf8;
+            backdrop-filter: blur(4px);
         }
     </style>
 </head>
 <body>
 
-    <h2>📡 MULTIVIEW MONITORING TVRI</h2>
+    <h2>📡 DASHBOARD MONITORING TVRI MULTIVIEW</h2>
 
     <div class="grid-container">
         <div class="video-box">
-            <div class="label">TVRI NTB (Link 1)</div>
+            <div class="label">TVRI NASIONAL (BACKUP)</div>
             <video id="video1" controls muted autoplay></video>
         </div>
         <div class="video-box">
-            <div class="label">MONITORING 2</div>
+            <div class="label">TVRI SPORT (BACKUP)</div>
             <video id="video2" controls muted autoplay></video>
         </div>
         <div class="video-box">
-            <div class="label">MONITORING 3</div>
+            <div class="label">TVRI WORLD (BACKUP)</div>
             <video id="video3" controls muted autoplay></video>
         </div>
         <div class="video-box">
-            <div class="label">MONITORING 4</div>
+            <div class="label">TVRI KALIMANTAN BARAT</div>
             <video id="video4" controls muted autoplay></video>
         </div>
     </div>
 
     <script>
-        // Masukkan link m3u8 hasil grab di sini
         const streams = [
-            { id: 'video1', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' },
-            { id: 'video2', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' },
-            { id: 'video3', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' },
-            { id: 'video4', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nusa_tenggara_barat.m3u8' }
+            { id: 'video1', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_nasional_backup.m3u8' },
+            { id: 'video2', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_sport_backup.m3u8' },
+            { id: 'video3', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_world_backup.m3u8' },
+            { id: 'video4', url: 'https://play.mcpcasiasat.com/tvri/tvri_tvri_kalimantan_barat.m3u8' }
         ];
 
         streams.forEach(stream => {
@@ -92,3 +95,15 @@
             if (Hls.isSupported()) {
                 const hls = new Hls();
                 hls.loadSource(stream.url);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, function() {
+                    video.play();
+                });
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+                // Support untuk Safari
+                video.src = stream.url;
+            }
+        });
+    </script>
+</body>
+</html>
