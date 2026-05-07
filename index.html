@@ -62,24 +62,41 @@
             text-align: center;
             background: var(--overlay-bg);
             backdrop-filter: blur(12px);
-            padding: 15px 40px;
+            padding: 18px 45px;
             border-radius: 12px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            min-width: 500px;
-        }
-
-        #clock { 
-            font-family: 'JetBrains Mono', monospace; 
-            font-size: 28px; font-weight: 800; 
-            color: #fff; line-height: 1; margin-bottom: 5px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.7);
+            min-width: 650px; /* Lebar ditambah agar teks muat satu baris */
         }
 
         #date { 
             font-size: 12px; font-weight: 600; 
             color: var(--accent); letter-spacing: 2px;
-            margin-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);
             padding-bottom: 8px;
+        }
+
+        .clock-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 10px;
+        }
+
+        .station-id {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            letter-spacing: 1px;
+            border-right: 2px solid var(--accent);
+            padding-right: 15px;
+        }
+
+        #clock { 
+            font-family: 'JetBrains Mono', monospace; 
+            font-size: 32px; font-weight: 800; 
+            color: #fff; line-height: 1;
         }
 
         .shift-details {
@@ -95,7 +112,10 @@
 
     <div class="floating-center-info">
         <div id="date">MEMUAT TANGGAL...</div>
-        <div id="clock">00:00:00 WIB</div>
+        <div class="clock-row">
+            <div class="station-id">TVRI KALBAR | TRANSMISI PONTIANAK</div>
+            <div id="clock">00:00:00 WIB</div>
+        </div>
         <div id="shift-display" class="shift-details">MENGAMBIL DATA PETUGAS STANDBY...</div>
     </div>
 
@@ -176,7 +196,7 @@
 
         const streams = [
             { id: 'v1', url: 'https://ott-balancer.tvri.go.id/live/eds/Nasional/hls/Nasional-avc1_1500000=10003-mp4a_96000_eng=20000.m3u8' },
-            { id: 'v2', url: 'https://ott-balancer.tvri.go.id/live/eds/SportHD/hls/SportHD-avc1_1500000=10003-mp4a_96000=20002.m3u8' },
+            { id: 'v2', url: 'https://ott-balancer.tvri.go.id/live/eds/SportHD/hls/SportHD-avc1_900000=10002-mp4a_96000=20002.m3u8' },
             { id: 'v3', url: 'https://ott-balancer.tvri.go.id/live/eds/TVRIWorld/hls/TVRIWorld-avc1_1500000=10003-mp4a_96000=20002.m3u8' },
             { id: 'v4', url: 'https://ott-balancer.tvri.go.id/live/eds/Kalbar/hls/Kalbar-avc1_900000=10005-mp4a_96000=20003.m3u8' }
         ];
