@@ -3,50 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TVRI CHANNEL MONITORING</title>
+    <title>TVRI TRANSMISSION MONITORING</title>
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <style>
-        :root { --accent: #38bdf8; --bg: #020617; }
-        body { background-color: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 15px; }
+        :root { 
+            --accent: #00ff41; /* Hijau Neon */
+            --amber: #ffb100;  /* Kuning Amber */
+            --bg: #050505; 
+            --panel: #111111;
+        }
+        body { background-color: var(--bg); color: var(--accent); font-family: 'Courier New', Courier, monospace; margin: 0; padding: 15px; }
         
+        /* Header & Clock */
         .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 5px; }
-        #clock { font-family: monospace; font-size: 1.5rem; color: var(--accent); font-weight: bold; }
+        #clock { font-family: monospace; font-size: 1.5rem; color: var(--accent); font-weight: bold; text-shadow: 0 0 10px rgba(0, 255, 65, 0.5); }
         
+        /* Ticker Style */
         .ticker-container {
-            background: #0f172a;
-            border: 1px solid #1e293b;
-            color: #fbbf24;
+            background: var(--panel);
+            border: 1px solid #333;
+            color: var(--amber);
             padding: 8px 0;
             margin-bottom: 15px;
-            font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             font-size: 1rem;
             text-transform: uppercase;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
         }
 
         .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; max-width: 1400px; margin: auto; }
         @media (max-width: 900px) { .grid-container { grid-template-columns: 1fr; } }
 
         .video-box { 
-            background: #000; border: 1px solid #1e293b; position: relative; 
+            background: #000; border: 1px solid #222; position: relative; 
             border-radius: 4px; overflow: hidden; transition: all 0.3s;
         }
-        .video-box:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(56, 189, 248, 0.3); }
+        .video-box:hover { border-color: var(--accent); box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); }
         video { width: 100%; display: block; aspect-ratio: 16/9; }
 
+        /* Label Style */
         .label { 
-            position: absolute; top: 0; left: 0; background: rgba(2, 6, 23, 0.9); 
-            padding: 5px 15px; font-size: 12px; font-weight: bold; z-index: 10;
+            position: absolute; top: 0; left: 0; background: var(--accent); 
+            color: #000; padding: 5px 15px; font-size: 12px; font-weight: bold; z-index: 10;
             border-bottom-right-radius: 8px; display: flex; align-items: center; gap: 8px;
         }
-        .live-dot { height: 8px; width: 8px; background-color: #ef4444; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
+        .live-dot { height: 8px; width: 8px; background-color: #000; border-radius: 50%; display: inline-block; animation: blink 1s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
     </style>
 </head>
 <body>
 
     <div class="header">
-        <div><strong>TVRI TRANSMISSION MONITORING</strong> | KALBAR</div>
+        <div>[SYSTEM_MONITOR] <strong>TVRI TRANSMISSION</strong> | KALBAR</div>
         <div id="clock">00:00:00</div>
     </div>
 
@@ -62,27 +70,28 @@
     </div>
 
     <script>
+        // Data Jadwal (Andi Nur sudah diganti menjadi Ikbal)
         const dataJadwal = {
-            "7":  {"1": "Ilham Sidik, Ahmad Wildan, Ramadhan Surya, Ibnu Sulthan", "2": "Hanevi Azhar, Surya Darma, Sangaji, Rizky Ramdhani, Andi Nur", "3": "Usman, Merdi Tri"},
+            "7":  {"1": "Ilham Sidik, Ahmad Wildan, Ramadhan Surya, Ibnu Sulthan", "2": "Hanevi Azhar, Surya Darma, Sangaji, Rizky Ramdhani, Ikbal", "3": "Usman, Merdi Tri"},
             "8":  {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Ahmad Wildan", "2": "Usman, Merdi Tri", "3": "Hanevi Azhar, Surya Darma, Sangaji"},
             "9":  {"1": "Ahmad Wildan, Ramadhan Surya, Ibnu Sulthan, Sangaji", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik", "3": "Usman, Merdi Tri"},
             "10": {"1": "Ramadhan Surya, Ibnu Sulthan, Sangaji", "2": "Ahmad Wildan, Ramadhan Surya, Ibnu Sulthan", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik"},
             "11": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik", "2": "Sangaji", "3": "Ahmad Wildan, Ramadhan Surya, Ibnu Sulthan"},
-            "12": {"1": "Ahmad Wildan, Ramadhan Surya, Ibnu Sulthan", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik, Rizky, Andi Nur", "3": "Sangaji"},
+            "12": {"1": "Ahmad Wildan, Ramadhan Surya, Ibnu Sulthan", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik, Rizky, Ikbal", "3": "Sangaji"},
             "13": {"1": "Sangaji, Ibnu Sulthan", "2": "Ahmad Wildan, Ramadhan Surya", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri"},
             "14": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan", "3": "Ahmad Wildan, Ramadhan Surya"},
             "15": {"1": "Ahmad Wildan, Ramadhan Surya", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "3": "Sangaji, Ibnu Sulthan"},
             "16": {"1": "Sangaji, Ibnu Sulthan", "2": "Ahmad Wildan, Ramadhan Surya", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri"},
-            "17": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan, Rizky, Andi Nur", "3": "Ahmad Wildan, Ramadhan Surya"},
+            "17": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan, Rizky, Ikbal", "3": "Ahmad Wildan, Ramadhan Surya"},
             "18": {"1": "Ahmad Wildan, Ramadhan Surya", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "3": "Sangaji, Ibnu Sulthan"},
             "19": {"1": "Sangaji, Ibnu Sulthan", "2": "Ahmad Wildan, Ramadhan Surya", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri"},
             "20": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan", "3": "Ahmad Wildan, Ramadhan Surya"},
             "21": {"1": "Ahmad Wildan, Ramadhan Surya", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "3": "Sangaji, Ibnu Sulthan"},
-            "22": {"1": "Sangaji, Ibnu Sulthan", "2": "Ahmad Wildan, Ramadhan Surya, Rizky, Andi Nur", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri"},
+            "22": {"1": "Sangaji, Ibnu Sulthan", "2": "Ahmad Wildan, Ramadhan Surya, Rizky, Ikbal", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri"},
             "23": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan", "3": "Ahmad Wildan, Ramadhan Surya"},
             "24": {"1": "Ahmad Wildan, Ramadhan Surya", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "3": "Sangaji, Ibnu Sulthan"},
             "25": {"1": "Sangaji, Ibnu Sulthan", "2": "Ahmad Wildan, Ramadhan Surya", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri"},
-            "26": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan, Rizky, Andi Nur", "3": "Ahmad Wildan, Ramadhan Surya"},
+            "26": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan, Rizky, Ikbal", "3": "Ahmad Wildan, Ramadhan Surya"},
             "27": {"1": "Ahmad Wildan, Ramadhan Surya", "2": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "3": "Sangaji, Ibnu Sulthan"},
             "28": {"1": "Sangaji, Ibnu Sulthan", "2": "Ahmad Wildan, Ramadhan Surya", "3": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri"},
             "29": {"1": "Edi Kurniadi, Ramadhani, Ilham Sidik, Usman, Merdi Tri", "2": "Sangaji, Ibnu Sulthan", "3": "Ahmad Wildan, Ramadhan Surya, Rizky"},
@@ -97,18 +106,28 @@
             
             const tanggal = now.getDate();
             const jam = now.getHours();
+            
             let shift = "";
+            let jamShift = "";
 
-            if (jam >= 0 && jam < 8) shift = "1";
-            else if (jam >= 8 && jam < 16) shift = "2";
-            else shift = "3";
+            // Logika Shift
+            if (jam >= 0 && jam < 8) {
+                shift = "1";
+                jamShift = "00:00 - 08:00 WIB";
+            } else if (jam >= 8 && jam < 16) {
+                shift = "2";
+                jamShift = "08:00 - 16:00 WIB";
+            } else {
+                shift = "3";
+                jamShift = "16:00 - 00:00 WIB";
+            }
 
-            let petugas = "Data Tidak Tersedia";
+            let petugas = "DATA_ERROR";
             if (dataJadwal[tanggal]) {
                 petugas = dataJadwal[tanggal][shift];
             }
 
-            const tickerText = `[SHIFT ${shift}] PETUGAS STANDBY: ${petugas} --- LOKASI: SATUAN TRANSMISI TVRI KALBAR`;
+            const tickerText = `>> [SHIFT ${shift}] (${jamShift}) // PETUGAS: ${petugas} // LOKASI: TRANSMISI KALBAR | PONTIANAK <<`;
             const tickerEl = document.getElementById('shift-ticker');
             
             if (tickerEl.innerText !== tickerText) {
